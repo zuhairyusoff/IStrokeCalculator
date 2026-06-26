@@ -216,6 +216,58 @@
   }
   button.primary:hover{ background:var(--ink-soft); }
 
+  /* Suggested management card */
+  .recs-card{
+    margin-top:18px;
+  }
+  .recs-tier-label{
+    display:inline-block;
+    font-size:11.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    padding:3px 10px;
+    border-radius:12px;
+    margin-bottom:14px;
+  }
+  .recs-tier-label.tier-Low{ background:var(--low-bg); color:var(--low); }
+  .recs-tier-label.tier-Medium{ background:var(--med-bg); color:var(--med); }
+  .recs-tier-label.tier-High{ background:var(--high-bg); color:var(--high); }
+  ul.rec-list{
+    margin:0;
+    padding:0;
+    list-style:none;
+  }
+  ul.rec-list li{
+    position:relative;
+    padding:7px 0 7px 18px;
+    font-size:13.5px;
+    color:#33433F;
+    border-bottom:1px solid #EFEAE0;
+  }
+  ul.rec-list li:last-child{ border-bottom:none; }
+  ul.rec-list li::before{
+    content:"\2013";
+    position:absolute;
+    left:0;
+    color:var(--ink-soft);
+    font-weight:700;
+  }
+  sup.cite{
+    font-size:10px;
+    color:var(--ink-soft);
+    font-weight:700;
+    margin-left:1px;
+  }
+  .recs-foot{
+    font-size:12px;
+    color:#7A8077;
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px solid var(--line);
+    line-height:1.5;
+  }
+
   .disclaimer{
     margin-top:28px;
     font-size:12px;
@@ -223,6 +275,13 @@
     border-top:1px solid var(--line);
     padding-top:14px;
     line-height:1.55;
+  }
+  .ref-list{
+    margin:10px 0 0;
+    padding-left:18px;
+  }
+  .ref-list li{
+    margin-bottom:6px;
   }
 
   @media print{
@@ -352,6 +411,17 @@
         </div>
       </div>
 
+      <div class="card recs-card">
+        <h2>Suggested management</h2>
+        <div id="recsTierLabel" class="recs-tier-label tier-Low">Low risk</div>
+        <ul class="rec-list" id="recsList"></ul>
+        <div class="recs-foot">
+          Suggestions indicate follow-up intensity and referral threshold, not an independent indication to start
+          new pharmacotherapy. Treatment decisions should still be justified against standard eligibility criteria
+          in the cited guidelines for the individual patient.
+        </div>
+      </div>
+
       <div class="disclaimer">
         Research tool derived from the Pulau Pinang National Diabetes Registry (2019&ndash;2024), DrPH thesis,
         Universiti Teknologi MARA. Intended to support, not replace, clinical judgement. Risk tiers: Low &le;14 points,
@@ -359,6 +429,13 @@
         fitted on the most recent validated registry audit and should be refreshed periodically as new audit data
         become available; the points allocation itself does not change between recalibrations.
         <br><br>
+        <strong>References for suggested management</strong>
+        <ol class="ref-list">
+          <li>Ministry of Health Malaysia. Clinical Practice Guidelines: Management of Type 2 Diabetes Mellitus (6th Edition). Putrajaya: MOH; 2020.</li>
+          <li>Ministry of Health Malaysia, Academy of Medicine of Malaysia, Persatuan Diabetes Malaysia. Clinical Practice Guidelines: Management of Dyslipidaemia (5th Edition). 2017.</li>
+          <li>Bushnell C, Kernan WN, Sharrief AZ, et al. 2024 Guideline for the Primary Prevention of Stroke: A Guideline From the American Heart Association/American Stroke Association. <em>Stroke.</em> 2024;55(12):e344&ndash;e424. doi:10.1161/STR.0000000000000475</li>
+        </ol>
+        <br>
         &copy; 2026 [Ownership / attribution line pending confirmation from UiTM Research and Innovation /
         IP office and Ministry of Health data governance requirements]. Not for redistribution or commercial use
         without permission.
@@ -383,6 +460,29 @@
   // Final locked AI recalibration parameters (Section 4.18, fitted on full Phase 3)
   const RECAL_A = -0.9359;
   const RECAL_B = 0.6733;
+
+  // Tier-based suggested management, evidence-cited (see References in footer)
+  const RECS = {
+    Low: [
+      "Continue routine annual diabetic review on the existing schedule, no change indicated on the basis of this score alone.<sup class=\"cite\">1</sup>",
+      "Maintain individualised treatment targets: HbA1c, blood pressure &lt;130/80 mmHg, and LDL-C per cardiovascular risk category.<sup class=\"cite\">1,2</sup>",
+      "Reinforce lifestyle foundations: Mediterranean-pattern diet, regular physical activity, and smoking cessation.<sup class=\"cite\">3</sup>"
+    ],
+    Medium: [
+      "Reassess blood pressure, lipid, and glycaemic control at 3 to 6 month intervals rather than annually.<sup class=\"cite\">1</sup>",
+      "Confirm statin eligibility. Type 2 Diabetes is classified as very high cardiovascular risk, with an LDL-C target &lt;1.8 mmol/L.<sup class=\"cite\">2,3</sup>",
+      "Consider a GLP-1 receptor agonist if glycaemic control is not yet optimised; associated with reduced stroke risk in Type 2 Diabetes.<sup class=\"cite\">3</sup>",
+      "Aspirin benefit is uncertain for primary prevention in diabetes and should be individualised, not prescribed routinely.<sup class=\"cite\">3</sup>",
+      "Reinforce structured lifestyle counselling; consider dietitian referral."
+    ],
+    High: [
+      "Pursue the same targets as Medium risk (BP &lt;130/80 mmHg, LDL-C &lt;1.8 mmol/L) more urgently.<sup class=\"cite\">1,2</sup>",
+      "Refer for specialist assessment given the elevated absolute risk reflected by this score.",
+      "Review statin and GLP-1 receptor agonist eligibility with a lower threshold to act.<sup class=\"cite\">2,3</sup>",
+      "Routine carotid imaging is not recommended for asymptomatic patients; any imaging decision should sit with the receiving specialist.<sup class=\"cite\">3</sup>",
+      "Shorten follow-up to 3 months and counsel the patient on stroke warning signs (FAST) for early self-recognition."
+    ]
+  };
 
   function logit(p){ return Math.log(p/(1-p)); }
   function sigmoid(x){ return 1/(1+Math.exp(-x)); }
@@ -417,6 +517,13 @@
     badge.textContent = tier + " risk";
     badge.className = "tier-badge tier-"+tier;
 
+    const recsLabel = document.getElementById("recsTierLabel");
+    recsLabel.textContent = tier + " risk";
+    recsLabel.className = "recs-tier-label tier-"+tier;
+
+    const recsList = document.getElementById("recsList");
+    recsList.innerHTML = RECS[tier].map(r => `<li>${r}</li>`).join("");
+
     const tbl = document.getElementById("breakdownTable");
     tbl.innerHTML = rows.map(r=>{
       const cls = r[2]>0 ? "pos" : (r[2]<0 ? "neg" : "zero");
@@ -428,7 +535,5 @@
   fields.forEach(f=>document.getElementById(f).addEventListener("change", update));
   update();
 </script>
-
-<script data-goatcounter="https://zuhairyusoff.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
