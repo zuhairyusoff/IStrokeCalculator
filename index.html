@@ -4,61 +4,82 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>I-Stroke Score Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#1F4E5F;
-    --ink-soft:#3F6B79;
-    --paper:#F3EFE6;
+    --ink:#15323D;
+    --ink-soft:#3C6E73;
+    --ink-pale:#7C9CA0;
+    --paper:#EDE8DA;
     --card:#FFFFFF;
-    --line:#DCD5C5;
+    --line:#DCD2BD;
     --low:#4F7942;
     --low-bg:#EAF1E6;
     --med:#B5791E;
     --med-bg:#FAF0DD;
     --high:#A93226;
     --high-bg:#FBEAE7;
-    --mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    --display: "Fraunces", Georgia, serif;
+    --shadow-sm: 0 1px 2px rgba(21,50,61,0.06), 0 1px 1px rgba(21,50,61,0.05);
+    --shadow-md: 0 8px 24px rgba(21,50,61,0.10), 0 2px 6px rgba(21,50,61,0.06);
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
     font-family:var(--sans);
     background:var(--paper);
+    background-image:
+      radial-gradient(circle at 8% 0%, rgba(60,110,115,0.07), transparent 45%),
+      radial-gradient(circle at 100% 18%, rgba(165,50,38,0.045), transparent 40%);
     color:#22302E;
     line-height:1.5;
   }
   .wrap{
-    max-width:1080px;
+    max-width:1100px;
     margin:0 auto;
-    padding:28px 20px 60px;
+    padding:32px 20px 64px;
   }
   header{
-    margin-bottom:22px;
+    margin-bottom:26px;
   }
   .eyebrow{
-    font-size:12px;
-    letter-spacing:.12em;
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:.14em;
     text-transform:uppercase;
     color:var(--ink-soft);
     font-weight:600;
-    margin-bottom:6px;
+    margin-bottom:8px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow .dot{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--high);
+    box-shadow:0 0 0 3px var(--high-bg);
   }
   h1{
-    font-size:28px;
-    margin:0 0 6px;
+    font-family:var(--display);
+    font-weight:600;
+    font-size:33px;
+    margin:0 0 8px;
     color:var(--ink);
     letter-spacing:-0.01em;
   }
   .subtitle{
     font-size:14.5px;
     color:#52605C;
-    max-width:640px;
+    max-width:620px;
   }
   .grid{
     display:grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap:22px;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap:24px;
     align-items:start;
   }
   @media (max-width: 860px){
@@ -67,95 +88,199 @@
   .card{
     background:var(--card);
     border:1px solid var(--line);
-    border-radius:10px;
-    padding:22px 24px;
+    border-radius:14px;
+    padding:24px 26px;
+    box-shadow:var(--shadow-sm);
+    animation: rise .5s ease both;
+  }
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(6px); }
+    to{ opacity:1; transform:translateY(0); }
   }
   .card h2{
-    font-size:15px;
-    margin:0 0 16px;
-    color:var(--ink);
+    font-family:var(--mono);
+    font-size:13px;
+    margin:0 0 18px;
+    color:var(--ink-soft);
     text-transform:uppercase;
-    letter-spacing:.06em;
-    font-weight:700;
+    letter-spacing:.1em;
+    font-weight:600;
   }
+
+  /* ---- form fields + tooltip ---- */
   .field{
-    margin-bottom:16px;
+    margin-bottom:17px;
+  }
+  .field-label-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom:6px;
+    position:relative;
   }
   .field label{
-    display:block;
     font-size:13.5px;
     font-weight:600;
     color:#33433F;
-    margin-bottom:6px;
   }
+  .tip-wrap{ position:relative; display:inline-flex; margin-left:6px; }
+  .tip-btn{
+    width:17px; height:17px;
+    border-radius:50%;
+    border:1.3px solid var(--ink-soft);
+    background:transparent;
+    color:var(--ink-soft);
+    font-family:var(--mono);
+    font-size:10.5px;
+    font-weight:600;
+    line-height:1;
+    cursor:help;
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:0;
+  }
+  .tip-btn:hover, .tip-btn:focus{
+    border-color:var(--ink-soft);
+    color:var(--ink-soft);
+    outline:2px solid var(--ink-soft);
+    outline-offset:2px;
+  }
+  .tip-pop{
+    display:none;
+    position:absolute;
+    top:22px; left:0;
+    width:240px;
+    background:var(--ink);
+    color:#EAF2F1;
+    font-size:12px;
+    font-weight:400;
+    line-height:1.45;
+    padding:10px 12px;
+    border-radius:8px;
+    box-shadow:var(--shadow-md);
+    z-index:5;
+  }
+  .tip-btn:hover + .tip-pop, .tip-btn:focus + .tip-pop{ display:block; }
+
   .field select{
     width:100%;
-    padding:9px 10px;
+    padding:10px 11px;
     border:1px solid var(--line);
-    border-radius:6px;
+    border-radius:7px;
     font-size:14.5px;
     background:#FCFBF8;
     color:#22302E;
     font-family:var(--sans);
+    transition:border-color .15s;
   }
+  .field select:hover{ border-color:var(--ink-pale); }
   .field select:focus{
     outline:2px solid var(--ink);
     outline-offset:1px;
+    border-color:var(--ink);
   }
   .sticky{
     position:sticky;
     top:20px;
+  }
+
+  /* ---- gauge ---- */
+  .gauge-card{ padding-bottom:18px; }
+  .gauge-wrap{
+    position:relative;
+    width:100%;
+    max-width:300px;
+    margin:0 auto 4px;
+  }
+  .gauge-readout{
+    position:absolute;
+    left:0; right:0;
+    top:71%;
+    text-align:center;
+  }
+  .gauge-readout .calNum{
+    font-family:var(--display);
+    font-size:42px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1;
+  }
+  .gauge-readout .calLabel{
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .needle{
+    transform-origin:150px 130px;
+    transition:transform .7s cubic-bezier(.34,1.2,.4,1);
+  }
+  .gauge-ticklabel{
+    font-family:var(--mono);
+    font-size:11px;
+    fill:#8C9490;
+  }
+
+  .stat-row{
+    display:flex;
+    gap:10px;
+    margin-top:6px;
+  }
+  .stat-chip{
+    flex:1;
+    background:#F7F5EE;
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:9px 12px;
+    text-align:center;
+  }
+  .stat-chip .v{
+    font-family:var(--mono);
+    font-size:18px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .stat-chip .l{
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:#7A8077;
+    margin-top:2px;
   }
   .tier-badge{
     display:inline-block;
     padding:6px 16px;
     border-radius:20px;
     font-weight:700;
-    font-size:15px;
+    font-size:14.5px;
     letter-spacing:.02em;
+    transition:box-shadow .3s;
   }
   .tier-Low{ background:var(--low-bg); color:var(--low); }
   .tier-Medium{ background:var(--med-bg); color:var(--med); }
   .tier-High{ background:var(--high-bg); color:var(--high); }
-
-  .points-line{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    margin:16px 0 4px;
-  }
-  .points-total{
-    font-family:var(--mono);
-    font-size:34px;
-    font-weight:700;
-    color:var(--ink);
-  }
-  .points-label{
-    font-size:12.5px;
-    color:#647069;
-    text-transform:uppercase;
-    letter-spacing:.06em;
+  .tier-pulse{ animation:pulse 1s ease; }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(21,50,61,.25); }
+    70%{ box-shadow:0 0 0 9px rgba(21,50,61,0); }
+    100%{ box-shadow:0 0 0 0 rgba(21,50,61,0); }
   }
 
   .risk-flow{
     display:flex;
-    align-items:center;
-    gap:10px;
-    margin:18px 0 6px;
+    align-items:baseline;
+    justify-content:center;
+    gap:8px;
+    margin:14px 0 2px;
     flex-wrap:wrap;
   }
-  .risk-num{
-    font-family:var(--mono);
-    font-size:22px;
-    font-weight:700;
-  }
-  .risk-orig{ color:#8A8275; text-decoration:line-through; font-size:18px; font-weight:500;}
-  .arrow{ color:#A89F8E; font-size:16px; }
-  .risk-final{ color:var(--ink); }
+  .risk-orig{ color:#9A9181; text-decoration:line-through; font-size:14px; font-weight:500; font-family:var(--mono);}
+  .arrow{ color:#A89F8E; font-size:14px; }
   .ai-tag{
-    font-size:10.5px;
-    background:#EAE3D3;
-    color:#6B6253;
+    font-size:10px;
+    background:#E3ECEA;
+    color:var(--ink-soft);
     padding:2px 7px;
     border-radius:10px;
     font-weight:700;
@@ -163,15 +288,26 @@
     letter-spacing:.04em;
   }
   .caption{
-    font-size:12.5px;
+    font-size:12px;
     color:#7A8077;
     margin-top:2px;
+    text-align:center;
   }
+  .cohort-context{
+    margin-top:16px;
+    padding:11px 14px;
+    background:#F7F5EE;
+    border-left:3px solid var(--ink-soft);
+    border-radius:0 8px 8px 0;
+    font-size:12.5px;
+    color:#3F4D49;
+  }
+  .cohort-context b{ color:var(--ink); font-family:var(--mono); }
 
   details{
     margin-top:18px;
     border-top:1px solid var(--line);
-    padding-top:12px;
+    padding-top:14px;
   }
   summary{
     cursor:pointer;
@@ -186,7 +322,7 @@
     font-size:13px;
   }
   table.breakdown td{
-    padding:5px 4px;
+    padding:6px 4px;
     border-bottom:1px solid #EFEAE0;
   }
   table.breakdown td.val{
@@ -203,23 +339,26 @@
     margin-top:18px;
     display:flex;
     gap:10px;
+    flex-wrap:wrap;
   }
-  button.primary{
-    background:var(--ink);
-    color:#fff;
+  button.primary, button.secondary{
     border:none;
-    padding:10px 18px;
-    border-radius:6px;
+    padding:10px 16px;
+    border-radius:7px;
     font-size:13.5px;
     font-weight:600;
     cursor:pointer;
+    font-family:var(--sans);
+    transition:background .15s, transform .1s;
   }
+  button.primary{ background:var(--ink); color:#fff; }
   button.primary:hover{ background:var(--ink-soft); }
+  button.secondary{ background:#F7F5EE; color:var(--ink); border:1px solid var(--line); }
+  button.secondary:hover{ background:#EFEBDD; }
+  button:active{ transform:scale(.97); }
 
   /* Suggested management card */
-  .recs-card{
-    margin-top:18px;
-  }
+  .recs-card{ margin-top:18px; }
   .recs-tier-label{
     display:inline-block;
     font-size:11.5px;
@@ -233,14 +372,10 @@
   .recs-tier-label.tier-Low{ background:var(--low-bg); color:var(--low); }
   .recs-tier-label.tier-Medium{ background:var(--med-bg); color:var(--med); }
   .recs-tier-label.tier-High{ background:var(--high-bg); color:var(--high); }
-  ul.rec-list{
-    margin:0;
-    padding:0;
-    list-style:none;
-  }
+  ul.rec-list{ margin:0; padding:0; list-style:none; }
   ul.rec-list li{
     position:relative;
-    padding:7px 0 7px 18px;
+    padding:8px 0 8px 18px;
     font-size:13.5px;
     color:#33433F;
     border-bottom:1px solid #EFEAE0;
@@ -269,23 +404,34 @@
   }
 
   .disclaimer{
-    margin-top:28px;
+    margin-top:18px;
     font-size:12px;
     color:#7A8077;
     border-top:1px solid var(--line);
     padding-top:14px;
     line-height:1.55;
   }
-  .ref-list{
-    margin:10px 0 0;
-    padding-left:18px;
+  .ref-list{ margin:10px 0 0; padding-left:18px; }
+  .ref-list li{ margin-bottom:6px; }
+
+  .copy-feedback{
+    font-size:12px;
+    color:var(--low);
+    font-weight:600;
+    align-self:center;
+    opacity:0;
+    transition:opacity .2s;
   }
-  .ref-list li{
-    margin-bottom:6px;
+  .copy-feedback.show{ opacity:1; }
+
+  @media (prefers-reduced-motion: reduce){
+    .card{ animation:none; }
+    .needle{ transition:none; }
+    .tier-pulse{ animation:none; }
   }
 
   @media print{
-    .card.formcard, .actions, details{ display:none; }
+    .card.formcard, .actions, details, .tip-btn{ display:none; }
     body{ background:#fff; }
     .grid{ grid-template-columns: 1fr; }
     .sticky{ position:static; }
@@ -296,7 +442,7 @@
 <div class="wrap">
 
   <header>
-    <div class="eyebrow">National Diabetes Registry &middot; Pulau Pinang</div>
+    <div class="eyebrow"><span class="dot"></span>National Diabetes Registry &middot; Pulau Pinang</div>
     <h1>I-Stroke Score Calculator</h1>
     <div class="subtitle">Cerebrovascular disease risk estimation for adults with Type 2 Diabetes Mellitus. Points based and AI calibrated.</div>
   </header>
@@ -307,7 +453,13 @@
       <h2>Patient details</h2>
 
       <div class="field">
-        <label for="htn">Hypertension</label>
+        <div class="field-label-row">
+          <label for="htn">Hypertension</label>
+          <span class="tip-wrap">
+            <button type="button" class="tip-btn" aria-label="About hypertension">i</button>
+            <span class="tip-pop">Documented hypertension diagnosis or current use of antihypertensive medication.</span>
+          </span>
+        </div>
         <select id="htn">
           <option value="0">No</option>
           <option value="12">Yes</option>
@@ -315,7 +467,13 @@
       </div>
 
       <div class="field">
-        <label for="ckd">CKD stage</label>
+        <div class="field-label-row">
+          <label for="ckd">CKD stage</label>
+          <span class="tip-wrap">
+            <button type="button" class="tip-btn" aria-label="About CKD stage">i</button>
+            <span class="tip-pop">Chronic kidney disease stage by eGFR (CKD-EPI 2021). G1 is normal or high function; G5 is kidney failure.</span>
+          </span>
+        </div>
         <select id="ckd">
           <option value="0">G1</option>
           <option value="1">G2</option>
@@ -327,7 +485,13 @@
       </div>
 
       <div class="field">
-        <label for="ihd">Ischaemic heart disease</label>
+        <div class="field-label-row">
+          <label for="ihd">Ischaemic heart disease</label>
+          <span class="tip-wrap">
+            <button type="button" class="tip-btn" aria-label="About ischaemic heart disease">i</button>
+            <span class="tip-pop">Prior diagnosis of ischaemic heart disease, including angina or myocardial infarction.</span>
+          </span>
+        </div>
         <select id="ihd">
           <option value="0">Absent</option>
           <option value="3">Present</option>
@@ -335,7 +499,13 @@
       </div>
 
       <div class="field">
-        <label for="district">District of residence</label>
+        <div class="field-label-row">
+          <label for="district">District of residence</label>
+          <span class="tip-wrap">
+            <button type="button" class="tip-btn" aria-label="About district of residence">i</button>
+            <span class="tip-pop">Patient's district of residence within Pulau Pinang, as recorded in the registry.</span>
+          </span>
+        </div>
         <select id="district">
           <option value="0">Barat Daya</option>
           <option value="1">Seberang Perai Selatan</option>
@@ -346,7 +516,13 @@
       </div>
 
       <div class="field">
-        <label for="age">Age group</label>
+        <div class="field-label-row">
+          <label for="age">Age group</label>
+          <span class="tip-wrap">
+            <button type="button" class="tip-btn" aria-label="About age group">i</button>
+            <span class="tip-pop">Patient's age at the time of assessment.</span>
+          </span>
+        </div>
         <select id="age">
           <option value="0">Below 60 years</option>
           <option value="-1">60 years and above</option>
@@ -354,7 +530,13 @@
       </div>
 
       <div class="field">
-        <label for="sex">Sex</label>
+        <div class="field-label-row">
+          <label for="sex">Sex</label>
+          <span class="tip-wrap">
+            <button type="button" class="tip-btn" aria-label="About sex">i</button>
+            <span class="tip-pop">Biological sex as recorded in the National Diabetes Registry.</span>
+          </span>
+        </div>
         <select id="sex">
           <option value="0">Female</option>
           <option value="2">Male</option>
@@ -362,7 +544,13 @@
       </div>
 
       <div class="field">
-        <label for="dur">Duration of diabetes</label>
+        <div class="field-label-row">
+          <label for="dur">Duration of diabetes</label>
+          <span class="tip-wrap">
+            <button type="button" class="tip-btn" aria-label="About duration of diabetes">i</button>
+            <span class="tip-pop">Time elapsed since the patient's Type 2 Diabetes Mellitus diagnosis.</span>
+          </span>
+        </div>
         <select id="dur">
           <option value="0">Less than 5 years</option>
           <option value="1">5 to 9 years</option>
@@ -371,7 +559,13 @@
       </div>
 
       <div class="field">
-        <label for="bmi">BMI category</label>
+        <div class="field-label-row">
+          <label for="bmi">BMI category</label>
+          <span class="tip-wrap">
+            <button type="button" class="tip-btn" aria-label="About BMI category">i</button>
+            <span class="tip-pop">Body Mass Index category using the WHO Asian cut-offs applied in the registry.</span>
+          </span>
+        </div>
         <select id="bmi">
           <option value="0">Normal</option>
           <option value="-2">Overweight</option>
@@ -382,24 +576,45 @@
     </div>
 
     <div class="sticky">
-      <div class="card">
+      <div class="card gauge-card">
         <h2>Result</h2>
 
-        <div class="points-line">
-          <div>
-            <div class="points-total" id="totalPoints">0</div>
-            <div class="points-label">Total points</div>
+        <div class="gauge-wrap">
+          <svg viewBox="0 0 300 195" width="100%" id="gaugeSvg" role="img" aria-label="Risk gauge">
+            <path id="zoneLow" fill="none" stroke-width="16" stroke-linecap="round"></path>
+            <path id="zoneMed" fill="none" stroke-width="16" stroke-linecap="round"></path>
+            <path id="zoneHigh" fill="none" stroke-width="16" stroke-linecap="round"></path>
+            <text id="tickMin" class="gauge-ticklabel" text-anchor="middle"></text>
+            <text id="tickMax" class="gauge-ticklabel" text-anchor="middle"></text>
+            <g class="needle" id="needle">
+              <line x1="150" y1="130" x2="150" y2="32" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round"></line>
+              <circle cx="150" cy="130" r="7" fill="var(--ink)"></circle>
+            </g>
+          </svg>
+          <div class="gauge-readout">
+            <div class="calNum" id="calProb">0.0%</div>
+            <div class="calLabel">AI-calibrated risk</div>
           </div>
-          <div id="tierBadge" class="tier-badge tier-Low">Low risk</div>
         </div>
 
         <div class="risk-flow">
-          <span class="risk-num risk-orig" id="origProb">0.0%</span>
+          <span class="risk-orig" id="origProb">raw 0.0%</span>
           <span class="arrow">&rarr;</span>
-          <span class="risk-num risk-final" id="calProb">0.0%</span>
           <span class="ai-tag">AI calibrated</span>
         </div>
         <div class="caption">Estimated probability of cerebrovascular disease, before and after AI based recalibration of the locked score.</div>
+
+        <div class="stat-row">
+          <div class="stat-chip">
+            <div class="v" id="totalPoints">0</div>
+            <div class="l">Total points</div>
+          </div>
+          <div class="stat-chip">
+            <div id="tierBadge" class="tier-badge tier-Low">Low risk</div>
+          </div>
+        </div>
+
+        <div class="cohort-context" id="cohortContext"></div>
 
         <details>
           <summary>Show points breakdown</summary>
@@ -408,6 +623,8 @@
 
         <div class="actions">
           <button class="primary" onclick="window.print()">Print result</button>
+          <button class="secondary" id="copyBtn">Copy summary</button>
+          <span class="copy-feedback" id="copyFeedback">Copied</span>
         </div>
       </div>
 
@@ -461,6 +678,17 @@
   const RECAL_A = -0.9359;
   const RECAL_B = 0.6733;
 
+  // Actual achievable score range given the option values above (used to draw the gauge)
+  const SCORE_MIN = -5, SCORE_MAX = 34;
+  const LOW_MAX = 14, MED_MAX = 19;
+
+  // Real Phase 3 external validation cohort tier distribution (n = 9,324), Chapter 4 Table 19
+  const COHORT_CONTEXT = {
+    Low: "33.5%",
+    Medium: "38.4%",
+    High: "28.1%"
+  };
+
   // Tier-based suggested management, evidence-cited (see References in footer)
   const RECS = {
     Low: [
@@ -488,10 +716,53 @@
   function sigmoid(x){ return 1/(1+Math.exp(-x)); }
 
   function tierOf(points){
-    if (points <= 14) return "Low";
-    if (points <= 19) return "Medium";
+    if (points <= LOW_MAX) return "Low";
+    if (points <= MED_MAX) return "Medium";
     return "High";
   }
+
+  // ---- gauge geometry (single source of truth: SCORE_MIN/MAX + tier thresholds above) ----
+  function scoreToAngle(score){
+    const frac = (score - SCORE_MIN) / (SCORE_MAX - SCORE_MIN);
+    return 180 - frac * 180;
+  }
+  function polarToCartesian(cx, cy, r, angleDeg){
+    const a = angleDeg * Math.PI / 180;
+    return { x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) };
+  }
+  function describeArc(cx, cy, r, startAngle, endAngle){
+    const start = polarToCartesian(cx, cy, r, startAngle);
+    const end = polarToCartesian(cx, cy, r, endAngle);
+    const largeArc = Math.abs(startAngle - endAngle) > 180 ? 1 : 0;
+    return `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
+  }
+
+  function drawGaugeZones(){
+    const r = 110, cx = 150, cy = 130;
+    document.getElementById("zoneLow").setAttribute("d", describeArc(cx, cy, r, scoreToAngle(SCORE_MIN), scoreToAngle(LOW_MAX)));
+    document.getElementById("zoneLow").setAttribute("stroke", "var(--low)");
+    document.getElementById("zoneMed").setAttribute("d", describeArc(cx, cy, r, scoreToAngle(LOW_MAX + 1), scoreToAngle(MED_MAX)));
+    document.getElementById("zoneMed").setAttribute("stroke", "var(--med)");
+    document.getElementById("zoneHigh").setAttribute("d", describeArc(cx, cy, r, scoreToAngle(MED_MAX + 1), scoreToAngle(SCORE_MAX)));
+    document.getElementById("zoneHigh").setAttribute("stroke", "var(--high)");
+
+    const minPos = polarToCartesian(cx, cy, r + 18, scoreToAngle(SCORE_MIN));
+    const maxPos = polarToCartesian(cx, cy, r + 18, scoreToAngle(SCORE_MAX));
+    const tickMin = document.getElementById("tickMin");
+    tickMin.setAttribute("x", minPos.x); tickMin.setAttribute("y", minPos.y + 4);
+    tickMin.textContent = SCORE_MIN;
+    const tickMax = document.getElementById("tickMax");
+    tickMax.setAttribute("x", maxPos.x); tickMax.setAttribute("y", maxPos.y + 4);
+    tickMax.textContent = "+" + SCORE_MAX;
+  }
+
+  function updateNeedle(total){
+    const clamped = Math.min(Math.max(total, SCORE_MIN), SCORE_MAX);
+    const angle = scoreToAngle(clamped);
+    document.getElementById("needle").style.transform = `rotate(${90 - angle}deg)`;
+  }
+
+  let lastTier = null;
 
   function update(){
     let total = 0;
@@ -509,13 +780,20 @@
     const origP = sigmoid(logitP);
     const calP = sigmoid(RECAL_A + RECAL_B * logit(Math.min(Math.max(origP,1e-6),1-1e-6)));
 
-    document.getElementById("origProb").textContent = (origP*100).toFixed(1)+"%";
+    document.getElementById("origProb").textContent = "raw " + (origP*100).toFixed(1)+"%";
     document.getElementById("calProb").textContent = (calP*100).toFixed(1)+"%";
+
+    updateNeedle(total);
 
     const tier = tierOf(total);
     const badge = document.getElementById("tierBadge");
     badge.textContent = tier + " risk";
     badge.className = "tier-badge tier-"+tier;
+    if (lastTier !== null && lastTier !== tier){
+      badge.classList.add("tier-pulse");
+      setTimeout(()=>badge.classList.remove("tier-pulse"), 1000);
+    }
+    lastTier = tier;
 
     const recsLabel = document.getElementById("recsTierLabel");
     recsLabel.textContent = tier + " risk";
@@ -524,15 +802,45 @@
     const recsList = document.getElementById("recsList");
     recsList.innerHTML = RECS[tier].map(r => `<li>${r}</li>`).join("");
 
+    document.getElementById("cohortContext").innerHTML =
+      `This tier matched <b>${COHORT_CONTEXT[tier]}</b> of the Phase 3 external validation cohort (n&nbsp;=&nbsp;9,324).`;
+
     const tbl = document.getElementById("breakdownTable");
     tbl.innerHTML = rows.map(r=>{
       const cls = r[2]>0 ? "pos" : (r[2]<0 ? "neg" : "zero");
       const sign = r[2]>0 ? "+"+r[2] : r[2];
       return `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="val ${cls}">${sign}</td></tr>`;
     }).join("") + `<tr><td colspan="2"><strong>Total</strong></td><td class="val"><strong>${total>=0?"+"+total:total}</strong></td></tr>`;
+
+    return { total, tier, origP, calP, rows };
   }
 
+  document.getElementById("copyBtn").addEventListener("click", () => {
+    const state = update();
+    const lines = [
+      "I-Stroke Score result",
+      "Total points: " + (state.total>=0?"+":"") + state.total,
+      "Risk tier: " + state.tier,
+      "Estimated probability (AI-calibrated): " + (state.calP*100).toFixed(1) + "% (raw: " + (state.origP*100).toFixed(1) + "%)",
+      "",
+      "Variable breakdown:",
+      ...state.rows.map(r => `  ${r[0]}: ${r[1]} (${r[2]>=0?"+":""}${r[2]})`),
+      "",
+      "Suggested management (" + state.tier + " risk):",
+      ...RECS[state.tier].map(r => "  - " + r.replace(/<[^>]+>/g, "")),
+      "",
+      "Generated by the I-Stroke Score Calculator (Pulau Pinang National Diabetes Registry, UiTM DrPH research tool). Intended to support, not replace, clinical judgement."
+    ];
+    const text = lines.join("\n");
+    navigator.clipboard.writeText(text).then(() => {
+      const fb = document.getElementById("copyFeedback");
+      fb.classList.add("show");
+      setTimeout(()=>fb.classList.remove("show"), 1600);
+    });
+  });
+
   fields.forEach(f=>document.getElementById(f).addEventListener("change", update));
+  drawGaugeZones();
   update();
 </script>
 </body>
