@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>I-Stroke Score Calculator</title>
+<title>I-Stroke Score Calculator | AI-Calibrated Cerebrovascular Risk Tool for T2DM</title>
+<meta name="description" content="Free, AI-calibrated cerebrovascular disease risk calculator for adults with Type 2 Diabetes Mellitus. Hand-calculable, evidence-based, developed from the Pulau Pinang National Diabetes Registry.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%2315323D'/%3E%3Cpath d='M10 34h8l5-12 8 20 6-14 4 6h13' stroke='%23EDE8DA' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="I-Stroke Score Calculator">
+<meta property="og:description" content="AI-calibrated cerebrovascular disease risk calculator for Type 2 Diabetes patients. Free, hand-calculable, evidence-based.">
+<meta property="og:url" content="https://zuhairyusoff.github.io/IStrokeCalculator/">
+<meta property="og:image" content="https://zuhairyusoff.github.io/IStrokeCalculator/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="I-Stroke Score Calculator">
+<meta name="twitter:description" content="AI-calibrated cerebrovascular disease risk calculator for Type 2 Diabetes patients.">
+<meta name="twitter:image" content="https://zuhairyusoff.github.io/IStrokeCalculator/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -303,6 +314,19 @@
     color:#3F4D49;
   }
   .cohort-context b{ color:var(--ink); font-family:var(--mono); }
+
+  .tail-caveat{
+    display:none;
+    margin-top:10px;
+    padding:11px 14px;
+    background:var(--med-bg);
+    border-left:3px solid var(--med);
+    border-radius:0 8px 8px 0;
+    font-size:12.5px;
+    font-style:italic;
+    color:#5C4419;
+  }
+  .tail-caveat.show{ display:block; }
 
   details{
     margin-top:18px;
@@ -615,6 +639,7 @@
         </div>
 
         <div class="cohort-context" id="cohortContext"></div>
+        <div class="tail-caveat" id="tailCaveat"></div>
 
         <details>
           <summary>Show points breakdown</summary>
@@ -688,6 +713,10 @@
     Medium: "38.4%",
     High: "28.1%"
   };
+
+  // Extreme upper tail: only 77 of 9,324 Phase 3 patients (0.8%) scored this high or above,
+  // so the AI recalibration is less densely supported in this range. See database check.
+  const TAIL_THRESHOLD = 28;
 
   // Tier-based suggested management, evidence-cited (see References in footer)
   const RECS = {
@@ -805,6 +834,14 @@
     document.getElementById("cohortContext").innerHTML =
       `This tier matched <b>${COHORT_CONTEXT[tier]}</b> of the Phase 3 external validation cohort (n&nbsp;=&nbsp;9,324).`;
 
+    const tailEl = document.getElementById("tailCaveat");
+    if (total >= TAIL_THRESHOLD){
+      tailEl.innerHTML = "Few patients in the validation cohort scored this high (top 0.8%, n&nbsp;=&nbsp;77 of 9,324). The AI-calibrated estimate is less densely supported at this extreme and should be interpreted with added clinical judgement.";
+      tailEl.classList.add("show");
+    } else {
+      tailEl.classList.remove("show");
+    }
+
     const tbl = document.getElementById("breakdownTable");
     tbl.innerHTML = rows.map(r=>{
       const cls = r[2]>0 ? "pos" : (r[2]<0 ? "neg" : "zero");
@@ -822,6 +859,7 @@
       "Total points: " + (state.total>=0?"+":"") + state.total,
       "Risk tier: " + state.tier,
       "Estimated probability (AI-calibrated): " + (state.calP*100).toFixed(1) + "% (raw: " + (state.origP*100).toFixed(1) + "%)",
+      ...(state.total >= TAIL_THRESHOLD ? ["Note: few validation cohort patients scored this high (top 0.8%, n = 77 of 9,324); interpret with added clinical judgement."] : []),
       "",
       "Variable breakdown:",
       ...state.rows.map(r => `  ${r[0]}: ${r[1]} (${r[2]>=0?"+":""}${r[2]})`),
