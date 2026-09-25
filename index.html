@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>I-Stroke Score Calculator | AI-Calibrated Cerebrovascular Risk Tool for T2DM</title>
-<meta name="description" content="Free, AI-calibrated cerebrovascular disease risk calculator for adults with Type 2 Diabetes Mellitus. Hand-calculable, evidence-based, developed from the Pulau Pinang National Diabetes Registry.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%2315323D'/%3E%3Cpath d='M10 34h8l5-12 8 20 6-14 4 6h13' stroke='%23EDE8DA' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta name="description" content="Free, AI-calibrated cerebrovascular disease risk calculator for adults with Type 2 Diabetes Mellitus. Point-based, evidence-based, developed from the Pulau Pinang National Diabetes Registry.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231B2B44'/%3E%3Cpath d='M10 34h8l5-12 8 20 6-14 4 6h13' stroke='%23F3F5F7' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:title" content="I-Stroke Score Calculator">
-<meta property="og:description" content="AI-calibrated cerebrovascular disease risk calculator for Type 2 Diabetes patients. Free, hand-calculable, evidence-based.">
+<meta property="og:description" content="AI-calibrated cerebrovascular disease risk calculator for Type 2 Diabetes patients. Free, point-based, evidence-based.">
 <meta property="og:url" content="https://zuhairyusoff.github.io/IStrokeCalculator/">
 <meta property="og:image" content="https://zuhairyusoff.github.io/IStrokeCalculator/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -17,448 +17,182 @@
 <meta name="twitter:image" content="https://zuhairyusoff.github.io/IStrokeCalculator/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#15323D;
-    --ink-soft:#3C6E73;
-    --ink-pale:#7C9CA0;
-    --paper:#EDE8DA;
-    --card:#FFFFFF;
-    --line:#DCD2BD;
-    --low:#4F7942;
-    --low-bg:#EAF1E6;
-    --med:#B5791E;
-    --med-bg:#FAF0DD;
-    --high:#A93226;
-    --high-bg:#FBEAE7;
-    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-    --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    --display: "Fraunces", Georgia, serif;
-    --shadow-sm: 0 1px 2px rgba(21,50,61,0.06), 0 1px 1px rgba(21,50,61,0.05);
-    --shadow-md: 0 8px 24px rgba(21,50,61,0.10), 0 2px 6px rgba(21,50,61,0.06);
+    --ink:#1B2B44;
+    --ink-2:#2C4166;
+    --paper:#F3F5F7;
+    --surface:#FFFFFF;
+    --line:#D9DEE5;
+    --muted:#5A6778;
+    --low:#2F7D5B;  --low-bg:#E6F2EC;  --low-on-dark:#79D3A8;
+    --med:#A86A12;  --med-bg:#FBF1DF;  --med-on-dark:#F2C063;
+    --high:#B3372B; --high-bg:#FBE9E6; --high-on-dark:#FF9384;
+    --font:"Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
-  *{box-sizing:border-box;}
+  *{ box-sizing:border-box; }
+  :root{ padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+  html{ scroll-padding-top:env(safe-area-inset-top,0px); }
   body{
     margin:0;
-    font-family:var(--sans);
-    background:var(--paper);
-    background-image:
-      radial-gradient(circle at 8% 0%, rgba(60,110,115,0.07), transparent 45%),
-      radial-gradient(circle at 100% 18%, rgba(165,50,38,0.045), transparent 40%);
-    color:#22302E;
+    font-family:var(--font);
+    font-size:16px;
     line-height:1.5;
-  }
-  .wrap{
-    max-width:1100px;
-    margin:0 auto;
-    padding:32px 20px 64px;
-  }
-  header{
-    margin-bottom:26px;
-  }
-  .eyebrow{
-    font-family:var(--mono);
-    font-size:11.5px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    font-weight:600;
-    margin-bottom:8px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-  .eyebrow .dot{
-    width:6px; height:6px; border-radius:50%;
-    background:var(--high);
-    box-shadow:0 0 0 3px var(--high-bg);
-  }
-  h1{
-    font-family:var(--display);
-    font-weight:600;
-    font-size:33px;
-    margin:0 0 8px;
     color:var(--ink);
-    letter-spacing:-0.01em;
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
   }
-  .subtitle{
-    font-size:14.5px;
-    color:#52605C;
-    max-width:620px;
-  }
-  .grid{
-    display:grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap:24px;
-    align-items:start;
-  }
-  @media (max-width: 860px){
-    .grid{grid-template-columns: 1fr;}
-  }
-  .card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:24px 26px;
-    box-shadow:var(--shadow-sm);
-    animation: rise .5s ease both;
-  }
-  @keyframes rise{
-    from{ opacity:0; transform:translateY(6px); }
-    to{ opacity:1; transform:translateY(0); }
-  }
-  .card h2{
-    font-family:var(--mono);
-    font-size:13px;
-    margin:0 0 18px;
-    color:var(--ink-soft);
-    text-transform:uppercase;
-    letter-spacing:.1em;
-    font-weight:600;
-  }
+  .wrap{ max-width:1160px; margin:0 auto; padding:36px 22px 72px; }
 
-  /* ---- form fields + tooltip ---- */
-  .field{
-    margin-bottom:17px;
-  }
-  .field-label-row{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    margin-bottom:6px;
-    position:relative;
-  }
-  .field label{
-    font-size:13.5px;
-    font-weight:600;
-    color:#33433F;
-  }
-  .tip-wrap{ position:relative; display:inline-flex; margin-left:6px; }
-  .tip-btn{
-    width:17px; height:17px;
-    border-radius:50%;
-    border:1.3px solid var(--ink-soft);
-    background:transparent;
-    color:var(--ink-soft);
-    font-family:var(--mono);
-    font-size:10.5px;
-    font-weight:600;
-    line-height:1;
-    cursor:help;
-    display:inline-flex; align-items:center; justify-content:center;
-    padding:0;
-  }
-  .tip-btn:hover, .tip-btn:focus{
-    border-color:var(--ink-soft);
-    color:var(--ink-soft);
-    outline:2px solid var(--ink-soft);
-    outline-offset:2px;
-  }
-  .tip-pop{
-    display:none;
-    position:absolute;
-    top:22px; left:0;
-    width:240px;
-    background:var(--ink);
-    color:#EAF2F1;
-    font-size:12px;
-    font-weight:400;
-    line-height:1.45;
-    padding:10px 12px;
-    border-radius:8px;
-    box-shadow:var(--shadow-md);
-    z-index:5;
-  }
-  .tip-btn:hover + .tip-pop, .tip-btn:focus + .tip-pop{ display:block; }
+  /* Header */
+  header{ display:grid; grid-template-columns:1fr auto; gap:24px; align-items:end; margin-bottom:30px; }
+  h1{ font-size:clamp(30px,4.2vw,44px); line-height:1.05; margin:0 0 10px; letter-spacing:-0.02em; font-weight:700; }
+  .lede{ margin:0; color:var(--muted); max-width:58ch; font-size:17px; }
+  .facts{ display:flex; gap:22px; margin:0; padding:0; list-style:none; }
+  .facts li{ border-left:2px solid var(--ink); padding-left:10px; }
+  .facts b{ display:block; font-size:22px; font-variant-numeric:tabular-nums; line-height:1.1; }
+  .facts span{ font-size:13px; color:var(--muted); }
+  @media (max-width:860px){ header{ grid-template-columns:1fr; } .facts{ flex-wrap:wrap; } }
 
-  .field select{
-    width:100%;
-    padding:10px 11px;
-    border:1px solid var(--line);
-    border-radius:7px;
-    font-size:14.5px;
-    background:#FCFBF8;
-    color:#22302E;
-    font-family:var(--sans);
-    transition:border-color .15s;
-  }
-  .field select:hover{ border-color:var(--ink-pale); }
-  .field select:focus{
-    outline:2px solid var(--ink);
-    outline-offset:1px;
-    border-color:var(--ink);
-  }
-  .sticky{
-    position:sticky;
-    top:20px;
-  }
+  .grid{ display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr); gap:28px; align-items:start; }
+  @media (max-width:860px){ .grid{ grid-template-columns:1fr; } }
 
-  /* ---- gauge ---- */
-  .gauge-card{ padding-bottom:18px; }
-  .gauge-wrap{
-    position:relative;
-    width:100%;
-    max-width:300px;
-    margin:0 auto 4px;
+  /* Inputs */
+  .inputs{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:8px 26px 18px; }
+  .group-title{ font-size:15px; font-weight:700; margin:22px 0 4px; color:var(--muted); }
+  fieldset{ border:0; margin:0; padding:16px 0; border-top:1px solid var(--line); min-width:0; }
+  .group-title + fieldset{ border-top:0; }
+  legend{ padding:0; font-weight:700; font-size:16px; float:left; width:100%; }
+  .help{ clear:both; display:block; font-size:13.5px; color:var(--muted); margin:2px 0 10px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{ position:relative; }
+  .chip input{ position:absolute; opacity:0; width:1px; height:1px; }
+  .chip label{
+    display:inline-flex; align-items:baseline; gap:8px;
+    padding:9px 14px; min-height:44px; align-items:center;
+    border:1.5px solid var(--line); border-radius:10px;
+    background:var(--surface); cursor:pointer; font-size:15px;
+    transition:background .15s, border-color .15s, color .15s;
   }
-  .gauge-readout{
-    position:absolute;
-    left:0; right:0;
-    top:71%;
-    text-align:center;
-  }
-  .gauge-readout .calNum{
-    font-family:var(--display);
-    font-size:42px;
-    font-weight:600;
-    color:var(--ink);
-    line-height:1;
-  }
-  .gauge-readout .calLabel{
-    font-family:var(--mono);
-    font-size:10.5px;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin-top:2px;
-  }
-  .needle{
-    transform-origin:150px 130px;
-    transition:transform .7s cubic-bezier(.34,1.2,.4,1);
-  }
-  .gauge-ticklabel{
-    font-family:var(--mono);
-    font-size:11px;
-    fill:#8C9490;
-  }
+  .chip label:hover{ border-color:var(--ink-2); }
+  .chip .pts{ font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .chip input:checked + label{ background:var(--ink); border-color:var(--ink); color:#fff; }
+  .chip input:checked + label .pts{ color:#C9D3E3; }
+  .chip input:focus-visible + label{ outline:3px solid #6E9BE0; outline-offset:2px; }
+  .input-foot{ display:flex; justify-content:space-between; align-items:center; gap:12px; padding-top:16px; border-top:1px solid var(--line); font-size:13.5px; color:var(--muted); }
 
-  .stat-row{
-    display:flex;
-    gap:10px;
-    margin-top:6px;
-  }
-  .stat-chip{
-    flex:1;
-    background:#F7F5EE;
-    border:1px solid var(--line);
-    border-radius:9px;
-    padding:9px 12px;
-    text-align:center;
-  }
-  .stat-chip .v{
-    font-family:var(--mono);
-    font-size:18px;
-    font-weight:600;
-    color:var(--ink);
-  }
-  .stat-chip .l{
-    font-size:10.5px;
-    text-transform:uppercase;
-    letter-spacing:.06em;
-    color:#7A8077;
-    margin-top:2px;
-  }
-  .tier-badge{
-    display:inline-block;
-    padding:6px 16px;
-    border-radius:20px;
-    font-weight:700;
-    font-size:14.5px;
-    letter-spacing:.02em;
-    transition:box-shadow .3s;
-  }
-  .tier-Low{ background:var(--low-bg); color:var(--low); }
-  .tier-Medium{ background:var(--med-bg); color:var(--med); }
-  .tier-High{ background:var(--high-bg); color:var(--high); }
-  .tier-pulse{ animation:pulse 1s ease; }
-  @keyframes pulse{
-    0%{ box-shadow:0 0 0 0 rgba(21,50,61,.25); }
-    70%{ box-shadow:0 0 0 9px rgba(21,50,61,0); }
-    100%{ box-shadow:0 0 0 0 rgba(21,50,61,0); }
-  }
+  button{ font-family:inherit; font-size:15px; cursor:pointer; border-radius:10px; min-height:44px; padding:10px 16px; }
+  button:focus-visible, summary:focus-visible, a:focus-visible{ outline:3px solid #6E9BE0; outline-offset:2px; }
+  .btn-ghost{ background:transparent; border:1.5px solid var(--line); color:var(--ink); }
+  .btn-ghost:hover{ border-color:var(--ink); }
 
-  .risk-flow{
-    display:flex;
-    align-items:baseline;
-    justify-content:center;
-    gap:8px;
-    margin:14px 0 2px;
-    flex-wrap:wrap;
-  }
-  .risk-orig{ color:#9A9181; text-decoration:line-through; font-size:14px; font-weight:500; font-family:var(--mono);}
-  .arrow{ color:#A89F8E; font-size:14px; }
-  .ai-tag{
-    font-size:10px;
-    background:#E3ECEA;
-    color:var(--ink-soft);
-    padding:2px 7px;
-    border-radius:10px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.04em;
-  }
-  .caption{
-    font-size:12px;
-    color:#7A8077;
-    margin-top:2px;
-    text-align:center;
-  }
-  .cohort-context{
-    margin-top:16px;
-    padding:11px 14px;
-    background:#F7F5EE;
-    border-left:3px solid var(--ink-soft);
-    border-radius:0 8px 8px 0;
-    font-size:12.5px;
-    color:#3F4D49;
-  }
-  .cohort-context b{ color:var(--ink); font-family:var(--mono); }
+  /* Result panel */
+  .side{ position:sticky; top:calc(16px + env(safe-area-inset-top,0px)); display:grid; gap:20px; }
+  @media (max-width:860px){ .side{ position:static; } }
+  .result{ background:var(--ink); color:#fff; border-radius:18px; padding:26px 26px 22px; }
+  .result-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .result h2{ margin:0; font-size:15px; font-weight:400; color:#C9D3E3; }
+  .tier-pill{ font-weight:700; font-size:14px; padding:6px 12px; border-radius:999px; background:rgba(255,255,255,.08); white-space:nowrap; }
+  .tier-pill.Low{ color:var(--low-on-dark); box-shadow:inset 0 0 0 1.5px var(--low-on-dark); }
+  .tier-pill.Medium{ color:var(--med-on-dark); box-shadow:inset 0 0 0 1.5px var(--med-on-dark); }
+  .tier-pill.High{ color:var(--high-on-dark); box-shadow:inset 0 0 0 1.5px var(--high-on-dark); }
+  .prob{ font-size:clamp(64px,9vw,92px); font-weight:700; line-height:1; letter-spacing:-0.03em; margin:14px 0 4px; font-variant-numeric:tabular-nums; }
+  .prob small{ font-size:.42em; font-weight:400; letter-spacing:0; color:#C9D3E3; margin-left:2px; }
+  .prob-note{ margin:0; color:#C9D3E3; font-size:14.5px; max-width:42ch; }
+  .prob-note b{ color:#fff; font-weight:700; }
 
-  .tail-caveat{
-    display:none;
-    margin-top:10px;
-    padding:11px 14px;
-    background:var(--med-bg);
-    border-left:3px solid var(--med);
-    border-radius:0 8px 8px 0;
-    font-size:12.5px;
-    font-style:italic;
-    color:#5C4419;
-  }
+  .scale{ margin:26px 0 8px; }
+  .scale-head{ display:flex; justify-content:space-between; font-size:13.5px; color:#C9D3E3; margin-bottom:10px; }
+  .scale-head b{ color:#fff; font-size:18px; font-variant-numeric:tabular-nums; }
+  .track{ position:relative; height:12px; border-radius:6px; display:flex; overflow:visible; }
+  .track span{ height:100%; }
+  .track .z-low{ background:var(--low-on-dark); border-radius:6px 0 0 6px; }
+  .track .z-med{ background:var(--med-on-dark); }
+  .track .z-high{ background:var(--high-on-dark); border-radius:0 6px 6px 0; }
+  .marker{ position:absolute; top:-7px; width:4px; height:26px; margin-left:-2px; background:#fff; border-radius:2px; box-shadow:0 0 0 3px var(--ink); transition:left .35s cubic-bezier(.3,.7,.2,1); }
+  .ticks{ position:relative; height:18px; margin-top:8px; font-size:12px; color:#C9D3E3; font-variant-numeric:tabular-nums; }
+  .ticks span{ position:absolute; transform:translateX(-50%); }
+  .ticks span:first-child{ transform:none; }
+  .ticks span:last-child{ transform:translateX(-100%); }
+
+  .context{ margin:16px 0 0; font-size:14px; color:#C9D3E3; }
+  .context b{ color:#fff; }
+  .tail-caveat{ display:none; margin-top:14px; padding:12px 14px; border-radius:10px; background:rgba(242,192,99,.12); border:1px solid rgba(242,192,99,.45); color:#F7DDA8; font-size:14px; }
   .tail-caveat.show{ display:block; }
 
-  details{
-    margin-top:18px;
-    border-top:1px solid var(--line);
-    padding-top:14px;
-  }
-  summary{
-    cursor:pointer;
-    font-size:13px;
-    font-weight:600;
-    color:var(--ink-soft);
-  }
-  table.breakdown{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:10px;
-    font-size:13px;
-  }
-  table.breakdown td{
-    padding:6px 4px;
-    border-bottom:1px solid #EFEAE0;
-  }
-  table.breakdown td.val{
-    text-align:right;
-    font-family:var(--mono);
-    font-weight:600;
-    white-space:nowrap;
-  }
-  .pos{color:var(--high);}
-  .neg{color:var(--low);}
-  .zero{color:#A6A09230;}
-
-  .actions{
-    margin-top:18px;
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-  button.primary, button.secondary{
-    border:none;
-    padding:10px 16px;
-    border-radius:7px;
-    font-size:13.5px;
-    font-weight:600;
-    cursor:pointer;
-    font-family:var(--sans);
-    transition:background .15s, transform .1s;
-  }
-  button.primary{ background:var(--ink); color:#fff; }
-  button.primary:hover{ background:var(--ink-soft); }
-  button.secondary{ background:#F7F5EE; color:var(--ink); border:1px solid var(--line); }
-  button.secondary:hover{ background:#EFEBDD; }
-  button:active{ transform:scale(.97); }
-
-  /* Suggested management card */
-  .recs-card{ margin-top:18px; }
-  .recs-tier-label{
-    display:inline-block;
-    font-size:11.5px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.05em;
-    padding:3px 10px;
-    border-radius:12px;
-    margin-bottom:14px;
-  }
-  .recs-tier-label.tier-Low{ background:var(--low-bg); color:var(--low); }
-  .recs-tier-label.tier-Medium{ background:var(--med-bg); color:var(--med); }
-  .recs-tier-label.tier-High{ background:var(--high-bg); color:var(--high); }
-  ul.rec-list{ margin:0; padding:0; list-style:none; }
-  ul.rec-list li{
-    position:relative;
-    padding:8px 0 8px 18px;
-    font-size:13.5px;
-    color:#33433F;
-    border-bottom:1px solid #EFEAE0;
-  }
-  ul.rec-list li:last-child{ border-bottom:none; }
-  ul.rec-list li::before{
-    content:"\2013";
-    position:absolute;
-    left:0;
-    color:var(--ink-soft);
-    font-weight:700;
-  }
-  sup.cite{
-    font-size:10px;
-    color:var(--ink-soft);
-    font-weight:700;
-    margin-left:1px;
-  }
-  .recs-foot{
-    font-size:12px;
-    color:#7A8077;
-    margin-top:14px;
-    padding-top:12px;
-    border-top:1px solid var(--line);
-    line-height:1.5;
-  }
-
-  .disclaimer{
-    margin-top:18px;
-    font-size:12px;
-    color:#7A8077;
-    border-top:1px solid var(--line);
-    padding-top:14px;
-    line-height:1.55;
-  }
-  .ref-list{ margin:10px 0 0; padding-left:18px; }
-  .ref-list li{ margin-bottom:6px; }
-
-  .copy-feedback{
-    font-size:12px;
-    color:var(--low);
-    font-weight:600;
-    align-self:center;
-    opacity:0;
-    transition:opacity .2s;
-  }
+  .result details{ margin-top:18px; border-top:1px solid rgba(255,255,255,.14); padding-top:12px; }
+  .result summary{ cursor:pointer; font-size:14.5px; color:#fff; }
+  .breakdown{ width:100%; border-collapse:collapse; margin-top:10px; font-size:14px; }
+  .breakdown td{ padding:6px 0; border-bottom:1px solid rgba(255,255,255,.1); color:#DCE3EE; }
+  .breakdown td.val{ text-align:right; font-variant-numeric:tabular-nums; width:48px; }
+  .breakdown tr:last-child td{ border-bottom:0; color:#fff; }
+  .actions{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:18px; }
+  .btn-light{ background:#fff; color:var(--ink); border:0; font-weight:700; }
+  .btn-outline-light{ background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,.35); }
+  .btn-outline-light:hover{ border-color:#fff; }
+  .copy-feedback{ font-size:14px; color:var(--low-on-dark); opacity:0; transition:opacity .2s; }
   .copy-feedback.show{ opacity:1; }
 
-  @media (prefers-reduced-motion: reduce){
-    .card{ animation:none; }
-    .needle{ transition:none; }
-    .tier-pulse{ animation:none; }
+  /* Management */
+  .panel{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:22px 24px; }
+  .panel h2{ font-size:19px; margin:0 0 4px; }
+  .panel .sub{ margin:0 0 12px; font-size:14px; color:var(--muted); }
+  .recs{ margin:0; padding:0; list-style:none; }
+  .recs li{ padding:10px 0 10px 18px; border-top:1px solid var(--line); position:relative; font-size:15px; }
+  .recs li::before{ content:""; position:absolute; left:0; top:18px; width:7px; height:7px; border-radius:50%; background:var(--tier-colour, var(--low)); }
+  .panel.Low{ --tier-colour:var(--low); }
+  .panel.Medium{ --tier-colour:var(--med); }
+  .panel.High{ --tier-colour:var(--high); }
+  .tier-word{ color:var(--tier-colour); font-weight:700; }
+  sup.cite{ font-size:11px; color:var(--muted); }
+  .recs-foot{ margin:12px 0 0; font-size:13px; color:var(--muted); }
+
+  /* About + footer */
+  .about{ margin-top:40px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px; border-top:2px solid var(--ink); padding-top:26px; }
+  @media (max-width:860px){ .about{ grid-template-columns:1fr; } }
+  .about h3{ margin:0 0 8px; font-size:17px; }
+  .about p, .about li{ font-size:14.5px; color:#34445A; }
+  .about p{ margin:0 0 10px; }
+  .val-table{ width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums; }
+  .val-table th{ text-align:left; font-weight:700; padding:6px 8px 6px 0; border-bottom:1.5px solid var(--ink); }
+  .val-table td{ padding:6px 8px 6px 0; border-bottom:1px solid var(--line); color:#34445A; }
+  .val-table td:last-child, .val-table th:last-child{ text-align:right; padding-right:0; }
+  .table-scroll{ overflow-x:auto; }
+  .ref-list{ margin:0; padding-left:20px; }
+  .ref-list li{ margin-bottom:8px; font-size:13.5px; }
+  footer{ margin-top:36px; padding-top:18px; border-top:1px solid var(--line); font-size:13.5px; color:var(--muted); display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; }
+  footer strong{ color:var(--ink); }
+
+  /* Mobile live bar */
+  .livebar{
+    display:none; position:fixed; left:0; right:0; bottom:0; z-index:10;
+    background:var(--ink); color:#fff; padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));
+    align-items:center; justify-content:space-between; gap:12px;
+    box-shadow:0 -6px 20px rgba(27,43,68,.18);
+    transform:translateY(0); transition:transform .25s;
   }
+  .livebar.hide{ transform:translateY(110%); }
+  .livebar .lb-prob{ font-size:24px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .livebar .lb-pts{ font-size:13.5px; color:#C9D3E3; }
+  .livebar a{ color:#fff; font-size:14px; }
+  @media (max-width:860px){ .livebar{ display:flex; } .wrap{ padding-bottom:110px; } }
+
+  @media (prefers-reduced-motion:reduce){ *{ transition:none !important; } }
 
   @media print{
-    .card.formcard, .actions, details, .tip-btn{ display:none; }
     body{ background:#fff; }
-    .grid{ grid-template-columns: 1fr; }
-    .sticky{ position:static; }
+    .inputs, .actions, .livebar, .result details summary, .btn-ghost{ display:none !important; }
+    .grid{ grid-template-columns:1fr; }
+    .side{ position:static; }
+    .result{ background:#fff; color:var(--ink); border:1.5px solid var(--ink); }
+    .result h2, .prob small, .prob-note, .scale-head, .ticks, .context{ color:var(--ink) !important; }
+    .prob-note b, .context b, .scale-head b{ color:var(--ink) !important; }
+    .result details{ display:block; }
+    .result details > *{ display:block; }
+    .breakdown td{ color:var(--ink) !important; border-color:var(--line) !important; }
+    .marker{ box-shadow:0 0 0 2px #fff; background:var(--ink); }
+    .tail-caveat{ color:var(--ink); }
   }
 </style>
 </head>
@@ -466,180 +200,50 @@
 <div class="wrap">
 
   <header>
-    <div class="eyebrow"><span class="dot"></span>National Diabetes Registry &middot; Pulau Pinang</div>
-    <h1>I-Stroke Score Calculator</h1>
-    <div class="subtitle">Cerebrovascular disease risk estimation for adults with Type 2 Diabetes Mellitus. Points based and AI calibrated.</div>
+    <div>
+      <h1>I-Stroke Score Calculator</h1>
+      <p class="lede">Estimates the probability of cerebrovascular disease in adults with Type 2 Diabetes Mellitus, using eight routine clinical details and an AI-calibrated point-based score.</p>
+    </div>
+    <ul class="facts" aria-label="Score development at a glance">
+      <li><b>20,338</b><span>registry patient records</span></li>
+      <li><b>2019 to 2024</b><span>three registry cohorts</span></li>
+      <li><b>8</b><span>predictors</span></li>
+    </ul>
   </header>
 
   <div class="grid">
 
-    <div class="card formcard">
-      <h2>Patient details</h2>
-
-      <div class="field">
-        <div class="field-label-row">
-          <label for="htn">Hypertension</label>
-          <span class="tip-wrap">
-            <button type="button" class="tip-btn" aria-label="About hypertension">i</button>
-            <span class="tip-pop">Documented hypertension diagnosis or current use of antihypertensive medication.</span>
-          </span>
-        </div>
-        <select id="htn">
-          <option value="0">No</option>
-          <option value="12">Yes</option>
-        </select>
+    <section class="inputs" aria-label="Patient details">
+      <p class="group-title">Clinical history</p>
+      <div id="fieldsClinical"></div>
+      <p class="group-title">Patient profile</p>
+      <div id="fieldsProfile"></div>
+      <div class="input-foot">
+        <span>Points for each answer are shown beside it.</span>
+        <button type="button" class="btn-ghost" id="resetBtn">Reset answers</button>
       </div>
+    </section>
 
-      <div class="field">
-        <div class="field-label-row">
-          <label for="ckd">CKD stage</label>
-          <span class="tip-wrap">
-            <button type="button" class="tip-btn" aria-label="About CKD stage">i</button>
-            <span class="tip-pop">Chronic kidney disease stage by eGFR (CKD-EPI 2021). G1 is normal or high function; G5 is kidney failure.</span>
-          </span>
+    <aside class="side">
+      <section class="result" id="resultPanel" aria-live="polite">
+        <div class="result-top">
+          <h2>Estimated probability of cerebrovascular disease</h2>
+          <span class="tier-pill Low" id="tierBadge">Low risk</span>
         </div>
-        <select id="ckd">
-          <option value="0">G1</option>
-          <option value="1">G2</option>
-          <option value="4">G3a</option>
-          <option value="6">G3b</option>
-          <option value="6">G4</option>
-          <option value="8">G5</option>
-        </select>
-      </div>
+        <div class="prob" id="calProb">0.0<small>%</small></div>
+        <p class="prob-note">AI-calibrated estimate. Before recalibration the locked score gives <b id="origProb">0.0%</b>.</p>
 
-      <div class="field">
-        <div class="field-label-row">
-          <label for="ihd">Ischaemic heart disease</label>
-          <span class="tip-wrap">
-            <button type="button" class="tip-btn" aria-label="About ischaemic heart disease">i</button>
-            <span class="tip-pop">Prior diagnosis of ischaemic heart disease, including angina or myocardial infarction.</span>
-          </span>
-        </div>
-        <select id="ihd">
-          <option value="0">Absent</option>
-          <option value="3">Present</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <div class="field-label-row">
-          <label for="district">District of residence</label>
-          <span class="tip-wrap">
-            <button type="button" class="tip-btn" aria-label="About district of residence">i</button>
-            <span class="tip-pop">Patient's district of residence within Pulau Pinang, as recorded in the registry.</span>
-          </span>
-        </div>
-        <select id="district">
-          <option value="0">Barat Daya</option>
-          <option value="1">Seberang Perai Selatan</option>
-          <option value="6">Seberang Perai Utara</option>
-          <option value="8">Timur Laut</option>
-          <option value="8">Seberang Perai Tengah</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <div class="field-label-row">
-          <label for="age">Age group</label>
-          <span class="tip-wrap">
-            <button type="button" class="tip-btn" aria-label="About age group">i</button>
-            <span class="tip-pop">Patient's age at the time of assessment.</span>
-          </span>
-        </div>
-        <select id="age">
-          <option value="0">Below 60 years</option>
-          <option value="-1">60 years and above</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <div class="field-label-row">
-          <label for="sex">Sex</label>
-          <span class="tip-wrap">
-            <button type="button" class="tip-btn" aria-label="About sex">i</button>
-            <span class="tip-pop">Biological sex as recorded in the National Diabetes Registry.</span>
-          </span>
-        </div>
-        <select id="sex">
-          <option value="0">Female</option>
-          <option value="2">Male</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <div class="field-label-row">
-          <label for="dur">Duration of diabetes</label>
-          <span class="tip-wrap">
-            <button type="button" class="tip-btn" aria-label="About duration of diabetes">i</button>
-            <span class="tip-pop">Time elapsed since the patient's Type 2 Diabetes Mellitus diagnosis.</span>
-          </span>
-        </div>
-        <select id="dur">
-          <option value="0">Less than 5 years</option>
-          <option value="1">5 to 9 years</option>
-          <option value="0">10 years or more</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <div class="field-label-row">
-          <label for="bmi">BMI category</label>
-          <span class="tip-wrap">
-            <button type="button" class="tip-btn" aria-label="About BMI category">i</button>
-            <span class="tip-pop">Body Mass Index category using the WHO Asian cut-offs applied in the registry.</span>
-          </span>
-        </div>
-        <select id="bmi">
-          <option value="0">Normal</option>
-          <option value="-2">Overweight</option>
-          <option value="-4">Obese</option>
-        </select>
-      </div>
-
-    </div>
-
-    <div class="sticky">
-      <div class="card gauge-card">
-        <h2>Result</h2>
-
-        <div class="gauge-wrap">
-          <svg viewBox="0 0 300 195" width="100%" id="gaugeSvg" role="img" aria-label="Risk gauge">
-            <path id="zoneLow" fill="none" stroke-width="16" stroke-linecap="round"></path>
-            <path id="zoneMed" fill="none" stroke-width="16" stroke-linecap="round"></path>
-            <path id="zoneHigh" fill="none" stroke-width="16" stroke-linecap="round"></path>
-            <text id="tickMin" class="gauge-ticklabel" text-anchor="middle"></text>
-            <text id="tickMax" class="gauge-ticklabel" text-anchor="middle"></text>
-            <g class="needle" id="needle">
-              <line x1="150" y1="130" x2="150" y2="32" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round"></line>
-              <circle cx="150" cy="130" r="7" fill="var(--ink)"></circle>
-            </g>
-          </svg>
-          <div class="gauge-readout">
-            <div class="calNum" id="calProb">0.0%</div>
-            <div class="calLabel">AI-calibrated risk</div>
+        <div class="scale" aria-hidden="true">
+          <div class="scale-head"><span>I-Stroke Score</span><b id="totalPoints">0</b></div>
+          <div class="track" id="track">
+            <span class="z-low"></span><span class="z-med"></span><span class="z-high"></span>
+            <div class="marker" id="marker"></div>
           </div>
+          <div class="ticks" id="ticks"></div>
         </div>
 
-        <div class="risk-flow">
-          <span class="risk-orig" id="origProb">raw 0.0%</span>
-          <span class="arrow">&rarr;</span>
-          <span class="ai-tag">AI calibrated</span>
-        </div>
-        <div class="caption">Estimated probability of cerebrovascular disease, before and after AI based recalibration of the locked score.</div>
-
-        <div class="stat-row">
-          <div class="stat-chip">
-            <div class="v" id="totalPoints">0</div>
-            <div class="l">Total points</div>
-          </div>
-          <div class="stat-chip">
-            <div id="tierBadge" class="tier-badge tier-Low">Low risk</div>
-          </div>
-        </div>
-
-        <div class="cohort-context" id="cohortContext"></div>
-        <div class="tail-caveat" id="tailCaveat"></div>
+        <p class="context" id="cohortContext"></p>
+        <div class="tail-caveat" id="tailCaveat" role="note"></div>
 
         <details>
           <summary>Show points breakdown</summary>
@@ -647,53 +251,82 @@
         </details>
 
         <div class="actions">
-          <button class="primary" onclick="window.print()">Print result</button>
-          <button class="secondary" id="copyBtn">Copy summary</button>
-          <span class="copy-feedback" id="copyFeedback">Copied</span>
+          <button type="button" class="btn-light" onclick="window.print()">Print result</button>
+          <button type="button" class="btn-outline-light" id="copyBtn">Copy summary</button>
+          <span class="copy-feedback" id="copyFeedback" role="status">Copied</span>
         </div>
-      </div>
+      </section>
 
-      <div class="card recs-card">
+      <section class="panel Low" id="recsPanel">
         <h2>Suggested management</h2>
-        <div id="recsTierLabel" class="recs-tier-label tier-Low">Low risk</div>
-        <ul class="rec-list" id="recsList"></ul>
-        <div class="recs-foot">
-          Suggestions indicate follow-up intensity and referral threshold, not an independent indication to start
-          new pharmacotherapy. Treatment decisions should still be justified against standard eligibility criteria
-          in the cited guidelines for the individual patient.
-        </div>
-      </div>
-
-      <div class="disclaimer">
-        Research tool derived from the Pulau Pinang National Diabetes Registry (2019&ndash;2024), DrPH thesis,
-        Universiti Teknologi MARA. Intended to support, not replace, clinical judgement. Risk tiers: Low &le;14 points,
-        Medium 15&ndash;19 points, High &ge;20 points. The AI calibrated probability uses a logistic recalibration layer
-        fitted on the most recent validated registry audit and should be refreshed periodically as new audit data
-        become available; the points allocation itself does not change between recalibrations.
-        <br><br>
-        <strong>References for suggested management</strong>
-        <ol class="ref-list">
-          <li>Ministry of Health Malaysia. Clinical Practice Guidelines: Management of Type 2 Diabetes Mellitus (6th Edition). Putrajaya: MOH; 2020.</li>
-          <li>Ministry of Health Malaysia, Academy of Medicine of Malaysia, Persatuan Diabetes Malaysia. Clinical Practice Guidelines: Management of Dyslipidaemia (5th Edition). 2017.</li>
-          <li>Bushnell C, Kernan WN, Sharrief AZ, et al. 2024 Guideline for the Primary Prevention of Stroke: A Guideline From the American Heart Association/American Stroke Association. <em>Stroke.</em> 2024;55(12):e344&ndash;e424. doi:10.1161/STR.0000000000000475</li>
-        </ol>
-        <br>
-        &copy; 2026 [Ownership / attribution line pending confirmation from UiTM Research and Innovation /
-        IP office and Ministry of Health data governance requirements]. Not for redistribution or commercial use
-        without permission.
-      </div>
-    </div>
-
+        <p class="sub">For patients in the <span class="tier-word" id="recsTierLabel">Low risk</span> tier.</p>
+        <ul class="recs" id="recsList"></ul>
+        <p class="recs-foot">These suggestions guide follow-up intensity and referral threshold. They are not an independent indication to start new pharmacotherapy; treatment decisions should still meet standard eligibility criteria in the cited guidelines.</p>
+      </section>
+    </aside>
   </div>
+
+  <section class="about" aria-label="About the score">
+    <div>
+      <h3>How the score was built</h3>
+      <p>The I-Stroke Score was developed from the Pulau Pinang National Diabetes Registry as part of a Doctor of Public Health thesis at Universiti Teknologi MARA. Eight predictor domains were combined into a point-based logistic model.</p>
+      <p>Risk tiers: Low up to 14 points, Medium 15 to 19 points, High 20 points and above.</p>
+    </div>
+    <div>
+      <h3>How it performed</h3>
+      <div class="table-scroll">
+        <table class="val-table">
+          <thead><tr><th>Cohort</th><th>Patients</th><th>AUC</th></tr></thead>
+          <tbody>
+            <tr><td>Development, 2019 to 2020</td><td>4,808</td><td>0.681</td></tr>
+            <tr><td>Temporal internal, 2021 to 2022</td><td>6,206</td><td>0.663</td></tr>
+            <tr><td>Temporal external, 2023 to 2024</td><td>9,324</td><td>0.630</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:10px">The AI-calibrated probability applies a logistic (Platt) recalibration fitted on the most recent validated registry cohort. The points allocation does not change between recalibrations.</p>
+    </div>
+    <div>
+      <h3>References for suggested management</h3>
+      <ol class="ref-list">
+        <li>Ministry of Health Malaysia. Clinical Practice Guidelines: Management of Type 2 Diabetes Mellitus (6th Edition). Putrajaya: MOH; 2020.</li>
+        <li>Ministry of Health Malaysia, Academy of Medicine of Malaysia, Persatuan Diabetes Malaysia. Clinical Practice Guidelines: Management of Dyslipidaemia (5th Edition). 2017.</li>
+        <li>Bushnell C, Kernan WN, Sharrief AZ, et al. 2024 Guideline for the Primary Prevention of Stroke: A Guideline From the American Heart Association/American Stroke Association. <em>Stroke.</em> 2024;55(12):e344&ndash;e424. doi:10.1161/STR.0000000000000475</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    <span>Research tool intended to support, not replace, clinical judgement.</span>
+    <span>&copy; 2025 I-Stroke Score. Copyright registered with MyIPO, <strong>No. CRLY2025W02431</strong>. Not for redistribution or commercial use without permission.</span>
+  </footer>
+</div>
+
+<div class="livebar" id="livebar" aria-hidden="true">
+  <div><div class="lb-prob" id="lbProb">0.0%</div><div class="lb-pts" id="lbPts">Score 0, Low risk</div></div>
+  <a href="#resultPanel">View result</a>
 </div>
 
 <script>
-  const fields = ["htn","ckd","ihd","district","age","sex","dur","bmi"];
-  const labels = {
-    htn: "Hypertension", ckd: "CKD stage", ihd: "Ischaemic heart disease",
-    district: "District", age: "Age group", sex: "Sex",
-    dur: "Diabetes duration", bmi: "BMI category"
-  };
+  // Field definitions. Point values are identical to the locked I-Stroke Score.
+  const FIELDS = [
+    { id:"htn", group:"Clinical", label:"Hypertension", help:"Documented diagnosis or current antihypertensive medication.",
+      options:[["No",0],["Yes",12]] },
+    { id:"ckd", group:"Clinical", label:"CKD stage", help:"By eGFR (CKD-EPI 2021). G1 is normal or high function; G5 is kidney failure.",
+      options:[["G1",0],["G2",1],["G3a",4],["G3b",6],["G4",6],["G5",8]] },
+    { id:"ihd", group:"Clinical", label:"Ischaemic heart disease", help:"Prior diagnosis, including angina or myocardial infarction.",
+      options:[["Absent",0],["Present",3]] },
+    { id:"age", group:"Profile", label:"Age group", help:"Age at the time of assessment.",
+      options:[["Below 60 years",0],["60 years and above",-1]] },
+    { id:"sex", group:"Profile", label:"Sex", help:"As recorded in the National Diabetes Registry.",
+      options:[["Female",0],["Male",2]] },
+    { id:"dur", group:"Profile", label:"Duration of diabetes", help:"Time since Type 2 Diabetes Mellitus diagnosis.",
+      options:[["Less than 5 years",0],["5 to 9 years",1],["10 years or more",0]] },
+    { id:"bmi", group:"Profile", label:"BMI category", help:"WHO Asian cut-offs, as applied in the registry.",
+      options:[["Normal",0],["Overweight",-2],["Obese",-4]] },
+    { id:"district", group:"Profile", label:"District of residence", help:"District within Pulau Pinang, as recorded in the registry.",
+      options:[["Barat Daya",0],["Seberang Perai Selatan",1],["Seberang Perai Utara",6],["Timur Laut",8],["Seberang Perai Tengah",8]] }
+  ];
 
   // Locked I-Stroke equation (Section 4.7): Logit(P) = -5.198 + 1.223 * (points/10)
   const INTERCEPT = -5.198;
@@ -703,22 +336,16 @@
   const RECAL_A = -0.9359;
   const RECAL_B = 0.6733;
 
-  // Actual achievable score range given the option values above (used to draw the gauge)
+  // Achievable score range given the option values above
   const SCORE_MIN = -5, SCORE_MAX = 34;
   const LOW_MAX = 14, MED_MAX = 19;
 
   // Real Phase 3 external validation cohort tier distribution (n = 9,324), Chapter 4 Table 19
-  const COHORT_CONTEXT = {
-    Low: "33.5%",
-    Medium: "38.4%",
-    High: "28.1%"
-  };
+  const COHORT_CONTEXT = { Low:"33.5%", Medium:"38.4%", High:"28.1%" };
 
-  // Extreme upper tail: only 77 of 9,324 Phase 3 patients (0.8%) scored this high or above,
-  // so the AI recalibration is less densely supported in this range. See database check.
+  // Extreme upper tail: only 77 of 9,324 Phase 3 patients (0.8%) scored this high or above
   const TAIL_THRESHOLD = 28;
 
-  // Tier-based suggested management, evidence-cited (see References in footer)
   const RECS = {
     Low: [
       "Continue routine annual diabetic review on the existing schedule, no change indicated on the basis of this score alone.<sup class=\"cite\">1</sup>",
@@ -743,96 +370,80 @@
 
   function logit(p){ return Math.log(p/(1-p)); }
   function sigmoid(x){ return 1/(1+Math.exp(-x)); }
-
   function tierOf(points){
     if (points <= LOW_MAX) return "Low";
     if (points <= MED_MAX) return "Medium";
     return "High";
   }
+  function signed(n){ return n > 0 ? "+" + n : String(n); }
 
-  // ---- gauge geometry (single source of truth: SCORE_MIN/MAX + tier thresholds above) ----
-  function scoreToAngle(score){
-    const frac = (score - SCORE_MIN) / (SCORE_MAX - SCORE_MIN);
-    return 180 - frac * 180;
-  }
-  function polarToCartesian(cx, cy, r, angleDeg){
-    const a = angleDeg * Math.PI / 180;
-    return { x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) };
-  }
-  function describeArc(cx, cy, r, startAngle, endAngle){
-    const start = polarToCartesian(cx, cy, r, startAngle);
-    const end = polarToCartesian(cx, cy, r, endAngle);
-    const largeArc = Math.abs(startAngle - endAngle) > 180 ? 1 : 0;
-    return `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
-  }
-
-  function drawGaugeZones(){
-    const r = 110, cx = 150, cy = 130;
-    document.getElementById("zoneLow").setAttribute("d", describeArc(cx, cy, r, scoreToAngle(SCORE_MIN), scoreToAngle(LOW_MAX)));
-    document.getElementById("zoneLow").setAttribute("stroke", "var(--low)");
-    document.getElementById("zoneMed").setAttribute("d", describeArc(cx, cy, r, scoreToAngle(LOW_MAX + 1), scoreToAngle(MED_MAX)));
-    document.getElementById("zoneMed").setAttribute("stroke", "var(--med)");
-    document.getElementById("zoneHigh").setAttribute("d", describeArc(cx, cy, r, scoreToAngle(MED_MAX + 1), scoreToAngle(SCORE_MAX)));
-    document.getElementById("zoneHigh").setAttribute("stroke", "var(--high)");
-
-    const minPos = polarToCartesian(cx, cy, r + 18, scoreToAngle(SCORE_MIN));
-    const maxPos = polarToCartesian(cx, cy, r + 18, scoreToAngle(SCORE_MAX));
-    const tickMin = document.getElementById("tickMin");
-    tickMin.setAttribute("x", minPos.x); tickMin.setAttribute("y", minPos.y + 4);
-    tickMin.textContent = SCORE_MIN;
-    const tickMax = document.getElementById("tickMax");
-    tickMax.setAttribute("x", maxPos.x); tickMax.setAttribute("y", maxPos.y + 4);
-    tickMax.textContent = "+" + SCORE_MAX;
+  // Build radio chip groups
+  function buildFields(){
+    FIELDS.forEach(f => {
+      const host = document.getElementById(f.group === "Clinical" ? "fieldsClinical" : "fieldsProfile");
+      const fs = document.createElement("fieldset");
+      fs.innerHTML = `<legend>${f.label}</legend><span class="help" id="${f.id}-help">${f.help}</span>`;
+      fs.setAttribute("aria-describedby", f.id + "-help");
+      const chips = document.createElement("div");
+      chips.className = "chips";
+      f.options.forEach((o, i) => {
+        const rid = `${f.id}-${i}`;
+        const wrap = document.createElement("div");
+        wrap.className = "chip";
+        wrap.innerHTML =
+          `<input type="radio" name="${f.id}" id="${rid}" value="${i}" ${i === 0 ? "checked" : ""}>` +
+          `<label for="${rid}">${o[0]}<span class="pts">${signed(o[1])}</span></label>`;
+        chips.appendChild(wrap);
+      });
+      fs.appendChild(chips);
+      host.appendChild(fs);
+    });
   }
 
-  function updateNeedle(total){
-    const clamped = Math.min(Math.max(total, SCORE_MIN), SCORE_MAX);
-    const angle = scoreToAngle(clamped);
-    document.getElementById("needle").style.transform = `rotate(${90 - angle}deg)`;
+  // Score scale geometry: zone boundaries sit halfway between integer tier cut-points
+  const SPAN = SCORE_MAX - SCORE_MIN;
+  function pct(x){ return ((x - SCORE_MIN) / SPAN) * 100; }
+  function drawScale(){
+    const t = document.getElementById("track");
+    t.querySelector(".z-low").style.width = pct(LOW_MAX + 0.5) + "%";
+    t.querySelector(".z-med").style.width = (pct(MED_MAX + 0.5) - pct(LOW_MAX + 0.5)) + "%";
+    t.querySelector(".z-high").style.width = (100 - pct(MED_MAX + 0.5)) + "%";
+    const ticks = [[SCORE_MIN, signed(SCORE_MIN)], [LOW_MAX + 0.5, "15"], [MED_MAX + 0.5, "20"], [SCORE_MAX, signed(SCORE_MAX)]];
+    document.getElementById("ticks").innerHTML = ticks.map(k => `<span style="left:${pct(k[0])}%">${k[1]}</span>`).join("");
   }
 
-  let lastTier = null;
+  function readRows(){
+    return FIELDS.map(f => {
+      const idx = parseInt(document.querySelector(`input[name="${f.id}"]:checked`).value, 10);
+      const o = f.options[idx];
+      return [f.label, o[0], o[1]];
+    });
+  }
 
   function update(){
-    let total = 0;
-    const rows = [];
-    fields.forEach(f=>{
-      const el = document.getElementById(f);
-      const val = parseInt(el.value, 10);
-      total += val;
-      rows.push([labels[f], el.options[el.selectedIndex].text, val]);
-    });
-
-    document.getElementById("totalPoints").textContent = (total>=0? "+"+total : total);
+    const rows = readRows();
+    const total = rows.reduce((s, r) => s + r[2], 0);
 
     const logitP = INTERCEPT + SCALE * (total/10);
     const origP = sigmoid(logitP);
     const calP = sigmoid(RECAL_A + RECAL_B * logit(Math.min(Math.max(origP,1e-6),1-1e-6)));
-
-    document.getElementById("origProb").textContent = "raw " + (origP*100).toFixed(1)+"%";
-    document.getElementById("calProb").textContent = (calP*100).toFixed(1)+"%";
-
-    updateNeedle(total);
-
     const tier = tierOf(total);
+
+    document.getElementById("totalPoints").textContent = signed(total);
+    document.getElementById("calProb").innerHTML = (calP*100).toFixed(1) + "<small>%</small>";
+    document.getElementById("origProb").textContent = (origP*100).toFixed(1) + "%";
+    document.getElementById("marker").style.left = pct(Math.min(Math.max(total, SCORE_MIN), SCORE_MAX)) + "%";
+
     const badge = document.getElementById("tierBadge");
     badge.textContent = tier + " risk";
-    badge.className = "tier-badge tier-"+tier;
-    if (lastTier !== null && lastTier !== tier){
-      badge.classList.add("tier-pulse");
-      setTimeout(()=>badge.classList.remove("tier-pulse"), 1000);
-    }
-    lastTier = tier;
+    badge.className = "tier-pill " + tier;
 
-    const recsLabel = document.getElementById("recsTierLabel");
-    recsLabel.textContent = tier + " risk";
-    recsLabel.className = "recs-tier-label tier-"+tier;
-
-    const recsList = document.getElementById("recsList");
-    recsList.innerHTML = RECS[tier].map(r => `<li>${r}</li>`).join("");
+    document.getElementById("recsPanel").className = "panel " + tier;
+    document.getElementById("recsTierLabel").textContent = tier + " risk";
+    document.getElementById("recsList").innerHTML = RECS[tier].map(r => `<li>${r}</li>`).join("");
 
     document.getElementById("cohortContext").innerHTML =
-      `This tier matched <b>${COHORT_CONTEXT[tier]}</b> of the Phase 3 external validation cohort (n&nbsp;=&nbsp;9,324).`;
+      `<b>${COHORT_CONTEXT[tier]}</b> of the 2023 to 2024 validation cohort (n&nbsp;=&nbsp;9,324) fell in this tier.`;
 
     const tailEl = document.getElementById("tailCaveat");
     if (total >= TAIL_THRESHOLD){
@@ -842,43 +453,71 @@
       tailEl.classList.remove("show");
     }
 
-    const tbl = document.getElementById("breakdownTable");
-    tbl.innerHTML = rows.map(r=>{
-      const cls = r[2]>0 ? "pos" : (r[2]<0 ? "neg" : "zero");
-      const sign = r[2]>0 ? "+"+r[2] : r[2];
-      return `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="val ${cls}">${sign}</td></tr>`;
-    }).join("") + `<tr><td colspan="2"><strong>Total</strong></td><td class="val"><strong>${total>=0?"+"+total:total}</strong></td></tr>`;
+    document.getElementById("breakdownTable").innerHTML =
+      rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="val">${signed(r[2])}</td></tr>`).join("") +
+      `<tr><td colspan="2"><strong>Total</strong></td><td class="val"><strong>${signed(total)}</strong></td></tr>`;
+
+    document.getElementById("lbProb").textContent = (calP*100).toFixed(1) + "%";
+    document.getElementById("lbPts").textContent = `Score ${signed(total)}, ${tier} risk`;
 
     return { total, tier, origP, calP, rows };
   }
 
-  document.getElementById("copyBtn").addEventListener("click", () => {
+  function copySummary(){
     const state = update();
     const lines = [
       "I-Stroke Score result",
-      "Total points: " + (state.total>=0?"+":"") + state.total,
+      "Total points: " + signed(state.total),
       "Risk tier: " + state.tier,
       "Estimated probability (AI-calibrated): " + (state.calP*100).toFixed(1) + "% (raw: " + (state.origP*100).toFixed(1) + "%)",
       ...(state.total >= TAIL_THRESHOLD ? ["Note: few validation cohort patients scored this high (top 0.8%, n = 77 of 9,324); interpret with added clinical judgement."] : []),
       "",
       "Variable breakdown:",
-      ...state.rows.map(r => `  ${r[0]}: ${r[1]} (${r[2]>=0?"+":""}${r[2]})`),
+      ...state.rows.map(r => `  ${r[0]}: ${r[1]} (${signed(r[2])})`),
       "",
       "Suggested management (" + state.tier + " risk):",
-      ...RECS[state.tier].map(r => "  - " + r.replace(/<[^>]+>/g, "")),
+      ...RECS[state.tier].map(r => "  - " + r.replace(/<[^>]+>/g, "").replace(/&lt;/g, "<")),
       "",
-      "Generated by the I-Stroke Score Calculator (Pulau Pinang National Diabetes Registry, UiTM DrPH research tool). Intended to support, not replace, clinical judgement."
+      "Generated by the I-Stroke Score Calculator (Pulau Pinang National Diabetes Registry, UiTM DrPH research tool). Intended to support, not replace, clinical judgement.",
+      "Copyright registered with MyIPO, No. CRLY2025W02431."
     ];
     const text = lines.join("\n");
-    navigator.clipboard.writeText(text).then(() => {
+    const done = () => {
       const fb = document.getElementById("copyFeedback");
       fb.classList.add("show");
-      setTimeout(()=>fb.classList.remove("show"), 1600);
-    });
+      setTimeout(() => fb.classList.remove("show"), 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+  function fallbackCopy(text, done){
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch(e) {}
+    ta.remove();
+  }
+
+  buildFields();
+  drawScale();
+  document.querySelector(".inputs").addEventListener("change", update);
+  document.getElementById("copyBtn").addEventListener("click", copySummary);
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    FIELDS.forEach(f => { document.getElementById(`${f.id}-0`).checked = true; });
+    update();
   });
 
-  fields.forEach(f=>document.getElementById(f).addEventListener("change", update));
-  drawGaugeZones();
+  // Mobile: hide the live bar while the full result panel is on screen
+  if ("IntersectionObserver" in window){
+    const bar = document.getElementById("livebar");
+    new IntersectionObserver(entries => {
+      entries.forEach(e => bar.classList.toggle("hide", e.isIntersecting));
+    }, { threshold:0.25 }).observe(document.getElementById("resultPanel"));
+  }
+
   update();
 </script>
 </body>
